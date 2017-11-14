@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# checking if this PC has a swap
+if free | awk '/^Swap:/ {exit !$2}'; then
+    echo "Have swap"
+else
+    echo "No swap, creating one"
+    fallocate -l 1G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    sudo cp /etc/fstab /etc/fstab.bak
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+fi
+
+# how 2 remove swap file:
+# swapoff /swapfile
+# rm /swapfile
+
 rm -rf addons
 rm -rf l10n_it*
 mkdir addons
