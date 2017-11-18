@@ -36,6 +36,9 @@ RUN set -x; \
         && apt-get -y install -f --no-install-recommends \
         && rm -rf /var/lib/apt/lists/* odoo.deb
 
+# Correct setting to see assigned leads
+COPY ./crm_lead_view.xml /usr/lib/python2.7/dist-packages/openerp/addons/crm
+
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./openerp-server.conf /etc/odoo/
