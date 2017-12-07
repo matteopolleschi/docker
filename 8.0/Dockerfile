@@ -22,6 +22,7 @@ RUN set -x; \
         && rm -rf /var/lib/apt/lists/* wkhtmltox.deb \
         && pip install psycogreen==1.0 \
         && pip install pyxb==1.2.4 \
+        && pip install unicodecsv \
         && pip install codicefiscale
 
 
