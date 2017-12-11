@@ -7,7 +7,7 @@ docker rm odoo_data
 docker create -v /var/lib/postgresql/data --name odoo_data busybox
 docker stop db
 docker rm db
-docker run -p 5432:5432 -d -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=odoo --name db --volumes-from odoo_data postgres:9.4
+docker run -p 5432 -d -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=odoo --name db --volumes-from odoo_data postgres:9.4
 
 # app itself
 CONTAINER=odoo8
