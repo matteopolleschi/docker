@@ -1,0 +1,2 @@
+0 2 * * * root logrotate -f /etc/logrotate.d/nginx >> /var/log/cron.log 2>&1
+0 3 */2 * * root certbot renew  >> /var/log/cron.log 2>&1
