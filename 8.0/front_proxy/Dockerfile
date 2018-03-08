@@ -3,7 +3,7 @@ MAINTAINER vertuzz <alexavd@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -y  python-pip \
+RUN apt-get update && apt-get install -y python-pip postgresql-client \
     nginx fail2ban software-properties-common supervisor logrotate cron \
     && add-apt-repository ppa:certbot/certbot \
     && apt-get update && apt-get install python-certbot-nginx -y
