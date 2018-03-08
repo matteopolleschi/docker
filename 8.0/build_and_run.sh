@@ -22,7 +22,8 @@ docker run -d -v $(pwd):/etc/odoo --name odoo8 --link db:db -t ubuntudoo-it:8
 docker stop front_proxy
 docker build front_proxy -f front_proxy/Dockerfile -t front_proxy;
 docker run -d -v /etc/letsencrypt:/etc/letsencrypt -p 80:80 -p 443:443 \
-        --name front_proxy --link odoo8:odoo8 --privileged --rm front_proxy
+        --name front_proxy --env-file ./front_proxy/env.list \
+        --link odoo8:odoo8 --link db:db --privileged --rm front_proxy
 
 IP=$(echo $(hostname -I) | cut -d' ' -f 1)
 echo "App is running on:"
