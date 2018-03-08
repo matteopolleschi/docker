@@ -15,6 +15,10 @@ COPY jail.local /etc/fail2ban/jail.local
 COPY nginx-req-limit.conf /etc/fail2ban/filter.d/nginx-req-limit.conf
 COPY logrotate /etc/logrotate.d/nginx
 COPY crontab /etc/cron.d/app-cron
+COPY backupper.py /root/backupper.py
+COPY env.sh /root/env.sh
+
+RUN pip install boto3==1.4.7
 
 RUN mkdir -p /var/log/nginx/app /var/log/supervisor \
     && rm /etc/nginx/sites-enabled/default \

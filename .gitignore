@@ -1,1 +1,3 @@
 .idea
+venv/
+8.0/front_proxy/env.list
