@@ -26,7 +26,7 @@ RUN mkdir -p /var/log/nginx/app /var/log/supervisor \
     && rm /etc/nginx/nginx.conf && mv /etc/nginx/front_nginx.conf /etc/nginx/nginx.conf  \
     && echo "daemon off;" >> /etc/nginx/nginx.conf \
     && chown -R www-data:www-data /var/log \
-    && chmod +x /root/env.sh
+    && chmod +x /root/env.sh \
     && touch /var/log/auth.log && chmod 0644 /etc/cron.d/app-cron \
     && touch /var/log/cron.log
 
