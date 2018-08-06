@@ -1,9 +1,7 @@
 Ubuntudoo - Italian version
 ======
 
-Before building the image:
-
-bash run_before_image_creation.sh 
+docker run -d -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=odoo --name db postgres:9.4
 
 How to build the image:
 
