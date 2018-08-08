@@ -38,4 +38,10 @@ git clone -b 8.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
 mv l10n-italy-supplemental/* ./addons
 rm -rf l10n-italy-supplemental
 
+rm -rf odoo_imppn
+git clone https://github.com/matteopolleschi/odoo_imppn.git
+# mv l10n-italy-supplemental/l10n_it_* ./addons
+mv odoo_imppn/* ./addons
+rm -rf odoo_imppn
+
 python run_before_image_creation.py
