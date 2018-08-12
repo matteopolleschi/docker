@@ -29,7 +29,7 @@ rm -rf partner-contact
 rm -rf l10n-italy
 git clone -b 8.0 https://github.com/OCA/l10n-italy.git
 # mv l10n-italy/l10n_it_* ./addons
-mv l10n-italy/* ./addons
+mv l10n-italy/l* ./addons
 rm -rf l10n-italy
 
 rm -rf l10n-italy-supplemental
