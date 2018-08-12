@@ -40,7 +40,7 @@ rm -rf l10n-italy-supplemental
 
 rm -rf stock-logistics-workflow
 git clone -b 8.0 https://github.com/OCA/stock-logistics-workflow.git
-mv stock-logistics-workflow/stock_picking_package_preparation_line ./addons
+mv stock-logistics-workflow/stock* ./addons
 rm -rf stock-logistics-workflo
 
 rm -rf odoo_imppn
