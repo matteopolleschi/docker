@@ -16,7 +16,7 @@ docker stop $CONTAINER
 docker rm $CONTAINER
 docker build -t $IMAGE .
 
-if [ "$1" == "no_proxy" ]; then
+if [ "$1" != "no_proxy" ]; then
     docker run -d -v $(pwd):/etc/odoo -p 80:8069 --name odoo8 --link db:db -t ubuntudoo-it:8
 else
     docker run -d -v $(pwd):/etc/odoo -p 8069:8069 --name odoo8 --link db:db -t ubuntudoo-it:8
