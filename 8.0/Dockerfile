@@ -25,17 +25,25 @@ RUN set -x; \
         && pip install unicodecsv \
         && pip install codicefiscale
 
+# install git in docker
+RUN apt-get update \
+    && apt-get install -y git
 
 # Install Odoo
 ENV ODOO_VERSION 8.0
 ENV ODOO_RELEASE 20171009
 RUN set -x; \
         curl -o odoo.deb -SL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
-        && echo '57609e8fcf0c1fd35be888e7c004754255555061 odoo.deb' | sha1sum -c - \
         && dpkg --force-depends -i odoo.deb \
         && apt-get update \
         && apt-get -y install -f --no-install-recommends \
         && rm -rf /var/lib/apt/lists/* odoo.deb
+
+# install python library pyIMPPN
+RUN git clone https://github.com/matteopolleschi/pyIMPPN.git pyIMPPN-master \
+    && cd pyIMPPN-master \
+    && python setup.py install \
+    && cd -
 
 # Correct setting to see assigned leads
 COPY ./crm_lead_view.xml /usr/lib/python2.7/dist-packages/openerp/addons/crm

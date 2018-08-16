@@ -28,8 +28,8 @@ rm -rf partner-contact
 
 rm -rf l10n-italy
 git clone -b 8.0 https://github.com/OCA/l10n-italy.git
-# mv l10n-italy/l10n_it_* ./addons
-mv l10n-italy/l* ./addons
+# mv l10n-italy/l* ./addons
+mv l10n-italy/l10n_it_* ./addons
 rm -rf l10n-italy
 
 rm -rf l10n-italy-supplemental
@@ -41,12 +41,12 @@ rm -rf l10n-italy-supplemental
 rm -rf stock-logistics-workflow
 git clone -b 8.0 https://github.com/OCA/stock-logistics-workflow.git
 mv stock-logistics-workflow/stock* ./addons
-rm -rf stock-logistics-workflo
+rm -rf stock-logistics-workflow
 
 rm -rf odoo_imppn
 git clone https://github.com/matteopolleschi/odoo_imppn.git
-# mv l10n-italy-supplemental/l10n_it_* ./addons
 mv odoo_imppn ./addons
-#rm -rf odoo_imppn
+rm -rf odoo_imppn
+
 
 python run_before_image_creation.py
