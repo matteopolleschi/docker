@@ -25,7 +25,7 @@ RUN set -x; \
         && cp -r wkhtmltox/share/man/man1 /usr/local/share/man/
 
 # Install Git 
-# RUN apt-get update && apt-get install -y git  
+RUN apt-get update && apt-get install -y git  
 
 # Install Odoo
 ENV ODOO_VERSION 11.0
@@ -38,12 +38,6 @@ RUN set -x; \
         && apt-get -y install -f --no-install-recommends \
         && rm -rf /var/lib/apt/lists/* odoo.deb
 
-# Install python library pyIMPPN
-# RUN git clone https://github.com/matteopolleschi/pyIMPPN.git pyIMPPN-master \
-#    && cd pyIMPPN-master \
-#    && python3 setup.py install \
-#    && cd -
-
 # Correct setting to see assigned leads
 # COPY ./crm_lead_view.xml /usr/lib/python3/dist-packages/odoo/addons/crm
 
@@ -53,6 +47,13 @@ RUN pip3 install wheel \
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
 RUN chown odoo /etc/odoo/odoo.conf
+
+# Install python library pyIMPPN
+RUN python3 -m pip install --user --upgrade setuptools wheel twine \
+    && git clone https://github.com/matteopolleschi/pyIMPPN.git pyIMPPN-master \
+    && cd pyIMPPN-master \
+    && python3 setup.py install \
+    && cd -
 
 # Install Italian Modules dependencies
 RUN pip3 install psycogreen==1.0 \

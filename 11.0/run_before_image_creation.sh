@@ -43,10 +43,10 @@ git clone -b 11.0 https://github.com/OCA/stock-logistics-workflow.git
 mv stock-logistics-workflow/stock* ./addons
 rm -rf stock-logistics-workflow
 
-# rm -rf odoo_imppn
-# git clone https://github.com/matteopolleschi/odoo_imppn.git
-# mv odoo_imppn ./addons
-# rm -rf odoo_imppn
+rm -rf odoo_imppn
+git clone -b 11.0 https://github.com/matteopolleschi/odoo_imppn.git
+mv odoo_imppn ./addons
+rm -rf odoo_imppn
 
 rm -rf odoo_publishers
 git clone https://github.com/matteopolleschi/odoo_publishers.git
