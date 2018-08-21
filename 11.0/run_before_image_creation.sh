@@ -43,10 +43,10 @@ git clone -b 11.0 https://github.com/OCA/stock-logistics-workflow.git
 mv stock-logistics-workflow/stock* ./addons
 rm -rf stock-logistics-workflow
 
-rm -rf l10n-italy
-git clone -b 11.0-mig-l10n_it_ddt https://github.com/dcorio/l10n-italy.git
-mv l10n-italy/l10n_it_ddt ./addons
-rm -rf l10n-italy
+# rm -rf l10n-italy
+# git clone -b 11.0-mig-l10n_it_ddt https://github.com/dcorio/l10n-italy.git
+# mv l10n-italy/l10n_it_ddt ./addons
+# rm -rf l10n-italy
 
 rm -rf odoo_imppn
 git clone -b 11.0 https://github.com/matteopolleschi/odoo_imppn.git
