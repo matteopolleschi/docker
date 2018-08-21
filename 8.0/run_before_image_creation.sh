@@ -53,5 +53,10 @@ git clone https://github.com/matteopolleschi/odoo_publishers.git
 mv odoo_publishers ./addons
 rm -rf odoo_publishers
 
+rm -rf odoo_import_upwork
+git clone https://github.com/matteopolleschi/odoo_import_upwork.git
+mv odoo_import_upwork ./addons
+rm -rf odoo_import_upwork
+
 
 python run_before_image_creation.py
