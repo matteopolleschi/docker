@@ -54,7 +54,7 @@ mv odoo_imppn ./addons
 rm -rf odoo_imppn
 
 rm -rf odoo_publishers
-git clone https://github.com/matteopolleschi/odoo_publishers.git
+git clone clone -b 11.0 https://github.com/matteopolleschi/odoo_publishers.git
 mv odoo_publishers ./addons
 rm -rf odoo_publishers
 
