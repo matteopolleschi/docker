@@ -50,7 +50,7 @@ RUN chown odoo /etc/odoo/odoo.conf
 
 # Install python library pyIMPPN
 RUN python3 -m pip install --user --upgrade setuptools wheel twine \
-    && git clone https://github.com/matteopolleschi/pyIMPPN.git pyIMPPN-master \
+    && git clone -b python3 https://github.com/matteopolleschi/pyIMPPN.git pyIMPPN-master \
     && cd pyIMPPN-master \
     && python3 setup.py install \
     && cd -
