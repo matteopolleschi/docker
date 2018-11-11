@@ -61,7 +61,7 @@ rm -rf odoo_import_upwork
 
 rm -rf l10n-italy
 git clone https://github.com/Odoo-Italia-Associazione/l10n-italy.git -b 8.0 --depth 1
-mv l10-italy/l10n_it_einvoice_base ./addons
+mv l10n-italy/l10n_it_einvoice_base ./addons
 rm -rf l10-italy
 
 python run_before_image_creation.py
