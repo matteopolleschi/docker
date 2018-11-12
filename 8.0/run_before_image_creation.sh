@@ -59,12 +59,12 @@ git clone https://github.com/matteopolleschi/odoo_import_upwork.git --depth 1
 mv odoo_import_upwork ./addons
 rm -rf odoo_import_upwork
 
-rm -rf l10n-italy
-git clone https://github.com/Odoo-Italia-Associazione/l10n-italy.git -b 8.0 --depth 1
-mv l10n-italy/l10n_it_einvoice_base ./addons
-mv l10n-italy/l10n_it_ade ./addons
-mv l10n-italy/l10n_it_fiscal_ipa ./addons
-mv l10n-italy/l10n_it_fiscal_payment_term ./addons
-rm -rf l10-italy
+#rm -rf l10n-italy
+#git clone https://github.com/Odoo-Italia-Associazione/l10n-italy.git -b 8.0 --depth 1
+#mv l10n-italy/l10n_it_einvoice_base ./addons
+#mv l10n-italy/l10n_it_ade ./addons
+#mv l10n-italy/l10n_it_fiscal_ipa ./addons
+#mv l10n-italy/l10n_it_fiscal_payment_term ./addons
+#rm -rf l10-italy
 
 python run_before_image_creation.py
