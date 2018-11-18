@@ -58,5 +58,20 @@ git clone -b 11.0 --depth 1 https://github.com/matteopolleschi/odoo_publishers.g
 mv odoo_publishers ./addons
 rm -rf odoo_publishers
 
+rm -rf l10n-italy
+rm -rf ./addons/l10n_it_fiscalcode
+rm -rf .addons/l10n_it_rea
+rm -rf .addons/l10n_it_pec
+rm -rf .addons/l10n_it_fical_payment_term
+git clone -b 11.0 --depth 1 https://github.com/Odoo-Italia-Associazione/l10n-italy.git
+mv l10n-italy/l10n_it_einvoice_base ./addons
+mv l10n-italy/l10n_it_einvoice_out ./addons
+mv l10n-italy/l10n_it_fiscalcode ./addons
+mv l10n-italy/l10n_it_rea ./addons
+mv l10n-italy/l10n_it_pec ./addons
+mv l10n-italy/l10n_it_fiscal_payment_term ./addons
+mv l10n-italy/l10n_it_split_payment ./addons
+mv l10n-italy/l10n_it_fiscal_ipa ./addons
+mv l10n-italy/l10n_it_ade ./addons
 
 python run_before_image_creation.py
