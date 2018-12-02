@@ -21,6 +21,11 @@ rm -rf addons
 rm -rf l10n_it*
 mkdir addons
 
+rm  -rf crm
+git clone -b 11.0 --depth 1 https://github.com/OCA/crm.git
+mv crm/crm_phonecall* ./addons
+rm  -rf crm
+
 rm -rf partner-contact
 git clone -b 11.0 --depth 1 https://github.com/OCA/partner-contact.git
 mv partner-contact/* ./addons
