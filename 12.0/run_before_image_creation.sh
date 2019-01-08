@@ -27,10 +27,20 @@ git clone -b 12.0 https://github.com/OCA/l10n-italy.git
 mv l10n-italy/l10n_it_* ./addons
 rm -rf l10n-italy
 
-#rm -rf partner-contact
-#git clone -b 11.0 https://github.com/OCA/partner-contact.git
-#mv partner-contact/* ./addons
-#rm -rf partner-contact
+rm -rf partner-contact
+git clone -b 12.0 https://github.com/OCA/partner-contact.git
+mv partner-contact/* ./addons
+rm -rf partner-contact
+
+rm -rf account-financial-tools
+git clone -b 12.0 https://github.com/OCA/account-financial-tools.git
+mv account-financial-tools/* ./addons
+rm -rf account-financial-tools
+
+rm -rf account-financial-reporting
+git clone -b 12.0 https://github.com/OCA/account-financial-reporting.git
+mv account-financial-reporting/* ./addons
+rm -rf account-financial-reporting
 
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
