@@ -21,16 +21,16 @@ rm -rf addons
 rm -rf l10n_it*
 mkdir addons
 
+rm -rf l10n-italy
+git clone -b 12.0 https://github.com/OCA/l10n-italy.git
+# mv l10n-italy/l* ./addons
+mv l10n-italy/l10n_it_* ./addons
+rm -rf l10n-italy
+
 #rm -rf partner-contact
 #git clone -b 11.0 https://github.com/OCA/partner-contact.git
 #mv partner-contact/* ./addons
 #rm -rf partner-contact
-
-#rm -rf l10n-italy
-#git clone -b 11.0 https://github.com/OCA/l10n-italy.git
-# mv l10n-italy/l* ./addons
-#mv l10n-italy/l10n_it_* ./addons
-#rm -rf l10n-italy
 
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
