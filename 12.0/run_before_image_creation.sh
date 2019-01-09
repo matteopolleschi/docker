@@ -42,6 +42,11 @@ git clone -b 12.0 https://github.com/OCA/account-financial-reporting.git
 mv account-financial-reporting/* ./addons
 rm -rf account-financial-reporting
 
+rm -rf server-ux
+git clone -b 12.0 https://github.com/OCA/server-ux.git
+mv server-ux/* ./addons
+rm -rf server-ux
+
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
 # mv l10n-italy-supplemental/l10n_it_* ./addons
