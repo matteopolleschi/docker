@@ -63,7 +63,8 @@ RUN pip3 install psycogreen==1.0 \
     && pip3 install pyxb==1.2.4 \
     && pip3 install unicodecsv \
     && pip3 install codicefiscale==0.9 \
-    && pip3 install phonenumbers
+    && pip3 install phonenumbers \
+    && pip3 install unidecode
 
 # Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN mkdir -p /mnt/extra-addons \
