@@ -47,6 +47,16 @@ git clone -b 12.0 https://github.com/OCA/server-ux.git
 mv server-ux/* ./addons
 rm -rf server-ux
 
+rm -rf crm
+git clone -b 12.0 https://github.com/OCA/crm.git
+mv crm/* ./addons
+rm -rf crm
+
+rm -rf odoo_publishers
+git clone -b 12.0 https://github.com/matteopolleschi/odoo_publishers.git
+mv odoo_publishers ./addons
+rm -rf odoo_publishers
+
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
 # mv l10n-italy-supplemental/l10n_it_* ./addons
