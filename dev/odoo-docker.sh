@@ -223,6 +223,7 @@ odoo_start() {
     #docker run -d -v $(pwd):/etc/odoo -p 80:8069 --name odoo12 --link db:db -t ubuntudoo-it:12
     # check if $ODOO_CONTAINER is existing
     #-v ../filestore:/var/lib/odoo/.local/share/Odoo/filestore \
+    cd Build
     docker stop $ODOO_CONTAINER 
     docker rm $ODOO_CONTAINER 
     docker run \
@@ -233,6 +234,7 @@ odoo_start() {
         --name $ODOO_CONTAINER \
         --link $PSQL_CONTAINER:db \
         -t $ODOO_IMAGE 
+    cd $CURRENT_PATH
   #else
   #  exit 0
     #Odoo via proxy
