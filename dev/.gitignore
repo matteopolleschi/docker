@@ -2,8 +2,8 @@ backup/*
 restore/*
 postgress-data
 .odoo.config
-Build/addons/*
-Build/odoo-data/*
+Build/addons
+Build/odoo-data
 filestore/*
 import/*
 export/*

@@ -244,7 +244,7 @@ odoo_start() {
 
 stop_postgres() {
   if [ $PSQL_BLOCK == "TRUE" ]; then
-    echo "Not allowed by configuration start and stop database for this container. Check PSQL_BLOCK parameter"
+    log "Not allowed by configuration start and stop database for this container. Check PSQL_BLOCK parameter"
     exit 1
   else
     psql_stop
@@ -287,14 +287,14 @@ status_postgres() {
 build_odoo() {
   #Build Postgress SQL
 
-  echo "Build filestore container: $ODOO_FILESTORE"
+  log "Build filestore container: $ODOO_FILESTORE"
   docker rm $ODOO_FILESTORE
   docker create \
-        -v $(pwd)/filestore:/var/lib/odoo/filestore \
+        -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
         --name $ODOO_FILESTORE \
         busybox
 
-  echo "Build $ODOO_IMAGE"
+  log "Build: $ODOO_IMAGE"
   echo `docker ps -a`
 
   if [ ! "$(docker ps -q -f name=`$ODOO_CONTAINER`)" ]; then
@@ -304,7 +304,7 @@ build_odoo() {
         exit 0
     fi
     # run your container
-    docker run -d --name <name> my-docker-image
+    docker run -d --name $ODOO_CONTAINER ODOO_IMAGE
 fi
   [ ! "$(docker ps -a | grep `$ODOO_CONTAINER`)" ] && echo 
   #docker run -d --name <name> <image>
@@ -693,14 +693,15 @@ case $PROCEDURE in
   build) #Start docker containers
     #build postgress
     odoo_build
-    start_postgres
+    #start_postgres
+    exit 0
     ;;
-  
+
   prebuild) #Prebuild all local dependencies
     #build postgress
     odoo_prebuild
     ;;
-  
+
   export) #Export data 
     echo "Exporting data"
   ;;
@@ -737,6 +738,4 @@ case $PROCEDURE in
     echo "-p list: List restore points"
     exit 0
     ;;
-    
-
 esac
