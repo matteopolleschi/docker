@@ -89,6 +89,7 @@ restore() {
 psql_start() {
   echo -n "Starting postgresql container [$PSQL_CONTAINER]: "
   #check if bysybox exists
+  mkdir -p postgress-data
   docker run -d \
     -p $PSQL_PORT \
     -e POSTGRES_DB=$PSQL_DB \
@@ -175,15 +176,23 @@ start_odoo() {
   docker ps
 }
 
+odoo_prebuild() {
+  log "Prebuilding addons library"
+  (cd Build && ./run_before_image_creation.sh)
+  #$CURRENT_PATH/run_before_image_creation.sh
+  #cd ..
+}
+
 odoo_build() {
-  echo "Bulding Odoo's image: $ODOO_IMAGE"
+  log "Bulding Odoo's image: $ODOO_IMAGE"
   #docker build $ODOO_IMAGE
-  cd dockerfiles
-  echo -n "Building directory is: "
+  cd Build
+  log -n "Building directory is: "
   pwd
+  mkdir -p addons
   #20190108
-  echo "Odoo version: $ODOO_VERSION"
-  echo "Odoo release: $ODOO_RELEASE"
+  loh "Odoo version: $ODOO_VERSION"
+  log "Odoo release: $ODOO_RELEASE"
   docker build \
     --no-cache \
     --build-arg ODOO_VERSION=$ODOO_VERSION \
@@ -685,6 +694,11 @@ case $PROCEDURE in
     start_postgres
     ;;
   
+  prebuild) #Prebuild all local dependencies
+    #build postgress
+    odoo_prebuild
+    ;;
+  
   export) #Export data 
     echo "Exporting data"
   ;;
@@ -711,6 +725,7 @@ case $PROCEDURE in
     echo "-p stop: odoo status"
     echo "-p list: list backups images"
     echo "-p build:"
+    echo "-p prebuild:"
     echo "-p restart: restart"
     echo "-p backup:"
     echo "-p restore:"
