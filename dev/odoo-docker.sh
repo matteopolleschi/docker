@@ -534,11 +534,11 @@ restore_procedure() {
     cd filestore/
     # RM old data
     # Create directory
-    docker exec --user 0 $ODOO_CONTAINER mkdir -p "/var/lib/odoo/filestore/$BACKUP_DB/"
+    docker exec --user 101 $ODOO_CONTAINER mkdir -p "/var/lib/odoo/filestore/$BACKUP_DB/"
     # Clean old data
     docker exec --user 0 $ODOO_CONTAINER rm -rf "/var/lib/odoo/filestore/$BACKUP_DB/*"
-    docker exec --user 0 $ODOO_CONTAINER chown -R odoo.odoo "/var/lib/odoo/filestore/$BACKUP_DB/"
-    docker exec --user 0 $ODOO_CONTAINER chmod -R 775 "/var/lib/odoo/filestore/$BACKUP_DB/"
+    #docker exec --user 0 $ODOO_CONTAINER chown -R odoo.odoo "/var/lib/odoo/filestore/$BACKUP_DB/"
+    #docker exec --user 0 $ODOO_CONTAINER chmod -R 775 "/var/lib/odoo/filestore/$BACKUP_DB/"
     # Transfer files via tar hack
     #
     tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 101 --group 102 | docker cp - $ODOO_CONTAINER:"/var/lib/odoo/filestore/$BACKUP_DB/"
@@ -546,8 +546,9 @@ restore_procedure() {
     
     # Restore files permisions
     docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/var/lib/odoo/filestore/$BACKUP_DB/*"
+    docker exec --user 0 $ODOO_CONTAINER chown -R odoo.odoo "/var/lib/odoo/filestore"
     # List files
-    docker exec --user 1000:1000 $ODOO_CONTAINER sh -c 'ls -ahl /var/lib/odoo/filestore/$BACKUP_DB/*'
+    docker exec --user 102:102 $ODOO_CONTAINER sh -c 'ls -ahl /var/lib/odoo/filestore/$BACKUP_DB/*'
     cd ..
     log "Done restore of filestore"
 
