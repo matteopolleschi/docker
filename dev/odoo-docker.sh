@@ -564,7 +564,7 @@ restore_procedure() {
   fi
 }
 
-restore_addons_procedure () {
+restore_addons_procedure() {
   restore_check
   log "Clean all previous restore data"
   rm -rf restore/tmp/*
