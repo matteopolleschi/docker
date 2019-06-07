@@ -23,12 +23,9 @@ mkdir addons/
 
 rm -rf l10n-italy
 git clone -b 12.0 https://github.com/OCA/l10n-italy.git
-# mv l10n-italy/l* ./addons
-
 echo "Merge https://github.com/OCA/l10n-italy.git to addonns/"
-mv l10n-italy/l10n_it_* ./addons
-#rsync -a l10n-italy/l10n_it* ./addons
-#cp -rva l10n-italy/l10n_it_* ./addons
+(cd l10n-italy && tar c .) | (cd addons && tar xf -)
+#mv l10n-italy/l10n_it_* ./addons
 rm -rf l10n-italy
 
 rm -rf partner-contact
