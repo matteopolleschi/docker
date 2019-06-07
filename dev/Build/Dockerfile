@@ -20,7 +20,8 @@ RUN set -x; \
             python3-watchdog \
             libssl1.0-dev \
             xz-utils \
-        && pip3 install babel decorator Werkzeug docutils XlsxWriter feedparser greenlet html2text Jinja2 lxml MarkupSafe mock num2words ofxparse passlib psutil psycogreen psycopg2 pydot pyparsing PyPDF2 pyserial python-dateutil python-openid pytz pyusb PyYAML qrcode reportlab requests six suds-jurko vatnumber vobject xlwt xlrd ebaysdk gevent Mako Pillow
+            python3-babel \
+        && pip3 install decorator Werkzeug docutils XlsxWriter feedparser greenlet html2text Jinja2 lxml MarkupSafe mock num2words ofxparse passlib psutil psycogreen psycopg2 pydot pyparsing PyPDF2 pyserial python-dateutil python-openid pytz pyusb PyYAML qrcode reportlab requests six suds-jurko vatnumber vobject xlwt xlrd ebaysdk gevent Mako Pillow
         && curl -o wkhtmltox.tar.xz -SL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz \
         && echo '3f923f425d345940089e44c1466f6408b9619562 wkhtmltox.tar.xz' | sha1sum -c - \
         && tar xvf wkhtmltox.tar.xz \
@@ -78,7 +79,7 @@ RUN python3 -m pip install --user --upgrade setuptools wheel twine \
 
 # Install Italian Modules dependencies
 RUN pip3 install psycogreen==1.0 \
-    && pip3 install pyxb==1.2.5 \
+    && pip3 install pyxb==1.2.6 \
     && pip3 install unicodecsv \
     && pip3 install codicefiscale==0.9 \
     && pip3 install phonenumbers \
