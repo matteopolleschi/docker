@@ -554,29 +554,50 @@ restore_procedure() {
 
     return 0
 
-    log "Start restore of addons"
-    cd addons/
-    # Create direcrory if not exist
-    docker exec --user 101:102 $ODOO_CONTAINER mkdir -p "/etc/odoo/addons/"
-    #Clean old data
-    #docker exec --user 101:102 $ODOO_CONTAINER rm -rf "/etc/odoo/addons/*"
-    # Transfer files via tar hack
-    tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 101 --group 102 | docker cp - $ODOO_CONTAINER:"/etc/odoo/addons/"
-    # restore permisions - user: odoo group: odoo
-    docker exec --user 0 $ODOO_CONTAINER chown -R odoo:odoo "/etc/odoo/addons"
-    # restore permisions to 755
-    docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/etc/odoo/addons"
-    # List files
-    docker exec --user 1000:1000 $ODOO_CONTAINER sh -c 'ls -ahl /etc/odoo/addons/*'
-    cd ..
-    log "Done restore of addons"
-
+    
   
     cd $CURRENT_PATH
     log "Application is restored"
     status_odoo
   else
     log "Restore procedure was canceled - DB: $RESTORE_DB date: $RESTORE_DATE file: $1"
+  fi
+}
+
+restore_addons () {
+  restore_check
+  log "Clean all previous restore data"
+  rm -rf restore/tmp/*
+  log "Backup procedure of archive initiated: $1"
+  #echo $$ > restore/tmp/.restore
+  cd restore/tmp
+  tar -xf $CURRENT_PATH/$1
+  du
+  #rm restore/tmp/.restore
+  #rm -rf restore/tmp/*
+  RESTORE_DB=$(cat "$CURRENT_PATH/restore/tmp/db/.database")
+  RESTORE_DATE=$(cat "$CURRENT_PATH/restore/tmp/db/.backup_date")
+  log "Database to restore: $RESTORE_DB"
+  log "Database date: $RESTORE_DATE"
+  read -p "Are you sure? " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    log "Start restore of addons"
+      cd addons/
+      # Create direcrory if not exist
+      docker exec --user 101:102 $ODOO_CONTAINER mkdir -p "/etc/odoo/addons/"
+      #Clean old data
+      #docker exec --user 101:102 $ODOO_CONTAINER rm -rf "/etc/odoo/addons/*"
+      # Transfer files via tar hack
+      tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 101 --group 102 | docker cp - $ODOO_CONTAINER:"/etc/odoo/addons/"
+      # restore permisions - user: odoo group: odoo
+      docker exec --user 0 $ODOO_CONTAINER chown -R odoo:odoo "/etc/odoo/addons"
+      # restore permisions to 755
+      docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/etc/odoo/addons"
+      # List files
+      docker exec --user 1000:1000 $ODOO_CONTAINER sh -c 'ls -ahl /etc/odoo/addons/*'
+      cd ..
+      log "Done restore of addons"
   fi
 }
 
@@ -703,8 +724,12 @@ case $PROCEDURE in
     backup_odoo
     ;;
   
-  restore) # Rstore application from backup
+  restore) # Restore application from backup (database and filestore)
     restore_odoo
+    ;;
+
+  restore_addons) # Restore addons only
+    restore_addons
     ;;
 
   log) #check logfile
