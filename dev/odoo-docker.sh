@@ -232,6 +232,14 @@ odoo_start() {
     #docker run -d -v $(pwd):/etc/odoo -p 80:8069 --name odoo12 --link db:db -t ubuntudoo-it:12
     # check if $ODOO_CONTAINER is existing
     #-v ../filestore:/var/lib/odoo/.local/share/Odoo/filestore \
+    log "Build filestore container: $ODOO_FILESTORE"
+    docker rm $ODOO_FILESTORE
+    mkdir -p $CURRENT_PATH/filestore
+    docker create \
+        -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
+        --name $ODOO_FILESTORE \
+        busybox 2>&1 | tee $LOGFILE
+
     cd Build
     docker stop $ODOO_CONTAINER
     docker rm $ODOO_CONTAINER 
