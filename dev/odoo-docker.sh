@@ -545,27 +545,27 @@ restore_procedure() {
     # Restore ownership 
     
     # Restore files permisions
-    docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/var/lib/odoo/filestore/$BACKUP_DB/*"
+    docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/var/lib/odoo/filestore"
     docker exec --user 0 $ODOO_CONTAINER chown -R odoo.odoo "/var/lib/odoo/filestore"
     # List files
     docker exec --user 102:102 $ODOO_CONTAINER sh -c 'ls -ahl /var/lib/odoo/filestore/$BACKUP_DB/*'
     cd ..
     log "Done restore of filestore"
 
-    return 0
+    #return 0
 
     log "Start restore of addons"
     cd addons/
     # Create direcrory if not exist
-    docker exec --user 1000:1000 $ODOO_CONTAINER mkdir -p "/etc/odoo/addons/"
+    docker exec --user 101:102 $ODOO_CONTAINER mkdir -p "/etc/odoo/addons/"
     #Clean old data
-    docker exec --user 1000:1000 $ODOO_CONTAINER rm -rf "/etc/odoo/addons/*"
+    #docker exec --user 101:102 $ODOO_CONTAINER rm -rf "/etc/odoo/addons/*"
     # Transfer files via tar hack
-    tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 1000 --group 1000 | docker cp - $ODOO_CONTAINER:"/etc/odoo/addons/"
+    tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 101 --group 102 | docker cp - $ODOO_CONTAINER:"/etc/odoo/addons/"
     # restore permisions - user: odoo group: odoo
-    docker exec --user 0 $ODOO_CONTAINER chown -R 1000:1000 "/etc/odoo/addons/"
+    docker exec --user 0 $ODOO_CONTAINER chown -R odoo:odoo "/etc/odoo/addons"
     # restore permisions to 755
-    docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/etc/odoo/addons/"
+    docker exec --user 0 $ODOO_CONTAINER chmod -R 755 "/etc/odoo/addons"
     # List files
     docker exec --user 1000:1000 $ODOO_CONTAINER sh -c 'ls -ahl /etc/odoo/addons/*'
     cd ..
