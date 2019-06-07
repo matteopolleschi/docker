@@ -61,7 +61,7 @@ rm -rf server-ux
 
 rm -rf crm
 git clone -b 12.0 https://github.com/OCA/crm.git
-(cd server-ux && tar c .) | (cd addons && tar xf -)
+(cd crm && tar c .) | (cd addons && tar xf -)
 #mv crm/* ./addons/
 echo "Merge https://github.com/OCA/crm.git to addonns/"
 rm -rf crm
