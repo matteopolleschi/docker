@@ -515,6 +515,21 @@ restore_procedure() {
   read -p "Are you sure? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]]; then
+
+    log "Start restore of db:$RESTORE_DB"
+    cd db
+    gzip -d database.sql.gz
+    docker exec \
+      -u postgres \
+      -e PGPASSWORD=$PSQL_PASSWORD \
+      $PSQL_CONTAINER \
+          psql \
+            --username=$PSQL_USER \
+            --dbname=$ODOO_DATABASE \
+                < database.sql
+    cd ..
+    log "Done restore of db"
+
     log "Start restore of filestore"
     cd filestore/
     # RM old data
@@ -536,6 +551,8 @@ restore_procedure() {
     cd ..
     log "Done restore of filestore"
 
+    return 0
+
     log "Start restore of addons"
     cd addons/
     # Create direcrory if not exist
@@ -553,19 +570,7 @@ restore_procedure() {
     cd ..
     log "Done restore of addons"
 
-    cd db
-    log "Start restore of db:$RESTORE_DB"
-    gzip -d database.sql.gz
-    docker exec \
-      -u postgres \
-      -e PGPASSWORD=$PSQL_PASSWORD \
-      $PSQL_CONTAINER \
-          psql \
-            --username=$PSQL_USER \
-            --dbname=$ODOO_DATABASE \
-                < database.sql
-    cd ..
-    log "Done restore of db"
+  
     cd $CURRENT_PATH
     log "Application is restored"
     status_odoo
