@@ -613,7 +613,7 @@ restore_addons() {
   select opt in "${options[@]}" "Select number of backup to restore"; do
     case $opt in
       *.gz)
-        restore_adodns_procedure $opt
+        restore_adodons_procedure $opt
         break
         ;;
       "end")
