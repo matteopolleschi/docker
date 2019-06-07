@@ -624,6 +624,7 @@ restore_addons() {
         echo "This is not a correct database archive choosed"
         ;;
   esac
+  done
 }
 
 restore_odoo() {
