@@ -552,7 +552,7 @@ restore_procedure() {
     cd ..
     log "Done restore of filestore"
 
-    #return 0
+    return 0
 
     log "Start restore of addons"
     cd addons/
