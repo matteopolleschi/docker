@@ -501,7 +501,7 @@ restore_procedure() {
   restore_check
   log "Clean all previous restore data"
   rm -rf restore/tmp/*
-  log "Backup procedure of archive initiated: $1"
+  log "Restore procedure of archive initiated: $1"
   #echo $$ > restore/tmp/.restore
   cd restore/tmp
   tar -xf $CURRENT_PATH/$1
@@ -564,7 +564,7 @@ restore_procedure() {
   fi
 }
 
-restore_addons () {
+restore_addons_procedure () {
   restore_check
   log "Clean all previous restore data"
   rm -rf restore/tmp/*
@@ -599,6 +599,31 @@ restore_addons () {
       cd ..
       log "Done restore of addons"
   fi
+}
+
+restore_addons() {
+  log "Start restore addons procedure"
+    
+  unset options i
+  while IFS= read -r -d $'\0' f; do
+    options[i++]="$f"
+  # put sorted listinf or backup archives files into into a list
+  done < <(find $BACKUP_PATH/$ODOO_DATABASE/ -maxdepth 1 -type f -name "odoo_backup*.gz" -print0 | sort -z)
+  # select archive to restore
+  select opt in "${options[@]}" "Select number of backup to restore"; do
+    case $opt in
+      *.gz)
+        restore_adodns_procedure $opt
+        break
+        ;;
+      "end")
+        echo "You chose to stop"
+        break
+        ;;
+      *)
+        echo "This is not a correct database archive choosed"
+        ;;
+  esac
 }
 
 restore_odoo() {
