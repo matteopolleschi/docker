@@ -137,7 +137,7 @@ start_postgres() {
           tput setaf 7;
           docker ps
           tput setaf 1;  echo -n "Stop container before starting. "
-          tput setaf 2;  echo "Command is: maintenance.sh -p stop"
+          tput setaf 2;  echo "Command is: odoo-docker.sh -p stop"
           tput setaf 7;
         
           #psql_stop #docker stop $PSQL_CONTAINER
@@ -187,12 +187,20 @@ odoo_prebuild() {
 odoo_build() {
   log "Bulding Odoo's image: $ODOO_IMAGE"
   #docker build $ODOO_IMAGE
+  log "Build filestore container: $ODOO_FILESTORE"
+  docker rm $ODOO_FILESTORE
+  mkdir -p $CURRENT_PATH/filestore
+  docker create \
+        -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
+        --name $ODOO_FILESTORE \
+        busybox 2>&1 | tee $LOGFILE
+
   cd Build
   log -n "Building directory is: "
   pwd
   mkdir -p addons
   #20190108
-  loh "Odoo version: $ODOO_VERSION"
+  log "Odoo version: $ODOO_VERSION"
   log "Odoo release: $ODOO_RELEASE"
   docker build \
     --no-cache \
@@ -225,7 +233,7 @@ odoo_start() {
     # check if $ODOO_CONTAINER is existing
     #-v ../filestore:/var/lib/odoo/.local/share/Odoo/filestore \
     cd Build
-    docker stop $ODOO_CONTAINER 
+    docker stop $ODOO_CONTAINER
     docker rm $ODOO_CONTAINER 
     docker run \
         -d \
@@ -234,7 +242,8 @@ odoo_start() {
         -p $ODOO_PORT:8069 \
         --name $ODOO_CONTAINER \
         --link $PSQL_CONTAINER:db \
-        -t $ODOO_IMAGE 
+        -t $ODOO_IMAGE \
+        2>&1 | tee $LOGFILE
     cd $CURRENT_PATH
   #else
   #  exit 0
@@ -290,10 +299,11 @@ build_odoo() {
 
   log "Build filestore container: $ODOO_FILESTORE"
   docker rm $ODOO_FILESTORE
+  mkdir -p $CURRENT_PATH/filestore
   docker create \
         -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
         --name $ODOO_FILESTORE \
-        busybox
+        busybox 2>&1 | tee $LOGFILE
 
   log "Build: $ODOO_IMAGE"
   echo `docker ps -a`
