@@ -35,6 +35,7 @@
 # var1="default value for var2"
 CONFIG_FILE=.odoo.config
 CURRENT_PATH=$(pwd)
+LOGFILE=$(pwd)/.logfile
 
 # set variables
 START_BACKUP=0
@@ -46,7 +47,7 @@ START_POSTGRES=0
 #  $2 parameters for echo
 #  $3 color
 log() {
-  echo $1
+  echo $1 | tee -a $LOGFILE
 }
 
 backup() {
@@ -55,7 +56,7 @@ backup() {
 
 mkdir -p $HOME/backup
 cd $HOME/backup
-echo "BACKUP: DATABASE = $database, TIME = $NOW" > $logfile
+echo "BACKUP: DATABASE = $database, TIME = $NOW"
 read -s -p "Enter DB Password for user '$USER': " db_password
 echo
 
@@ -70,11 +71,11 @@ if [ ! -d "$HOME/$FILESTORE/$database" ]; then
 fi
 
 echo -n "Backup database: $database ... "
-PGPASSWORD="$db_password" /usr/bin/pg_dump -Fc -v -U "$USER" --host $HOST -f "${NOW}-${database}.dump" "$database" >> $logfile 2>&1
+PGPASSWORD="$db_password" /usr/bin/pg_dump -Fc -v -U "$USER" --host $HOST -f "${NOW}-${database}.dump" "$database" >> $LOGFILE 2>&1
 error=$?; if [ $error -eq 0 ]; then echo "OK"; else echo "ERROR: $error"; fi
 
 echo -n "Backup filestore: $FILESTORE/$database ... "
-/bin/tar -czf "${NOW}-${database}.tar.gz" -C $HOME "$FILESTORE/$database" >> $logfile 2>&1
+/bin/tar -czf "${NOW}-${database}.tar.gz" -C $HOME "$FILESTORE/$database" >> $LOGFILE 2>&1
 error=$?
 if [ $error -eq 0 ]; then echo "OK"; else echo "ERROR: $error"; fi
 
@@ -178,7 +179,7 @@ start_odoo() {
 
 odoo_prebuild() {
   log "Prebuilding addons library"
-  (cd Build && ./run_before_image_creation.sh)
+  (cd Build && ./run_before_image_creation.sh 2>&1 | tee $LOGFILE )
   #$CURRENT_PATH/run_before_image_creation.sh
   #cd ..
 }
@@ -198,7 +199,7 @@ odoo_build() {
     --build-arg ODOO_VERSION=$ODOO_VERSION \
     --build-arg ODOO_RELEASE=$ODOO_RELEASE \
     -t $ODOO_IMAGE \
-    .
+    . 2>&1 | tee $LOGFILE
   cd ..
   exit 0
 }

@@ -9,3 +9,4 @@ import/*
 export/*
 .backup
 .odoo.config
+.logfile
