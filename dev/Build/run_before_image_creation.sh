@@ -68,8 +68,8 @@ rm -rf crm
 
 rm -rf odoo_publishers
 git clone -b 12.0 https://github.com/matteopolleschi/odoo_publishers.git
-(cd odoo_publishers && tar c .) | (cd addons && tar xf -)
-#mv odoo_publishers ./addons/
+#(cd odoo_publishers && tar c .) | (cd addons && tar xf -)
+mv odoo_publishers ./addons/
 echo "Merge https://github.com/matteopolleschi/odoo_publishers.git to addonns/"
 #rsync -a odoo_publishers/ ./addons
 #rm -rf odoo_publishers
