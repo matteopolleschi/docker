@@ -79,6 +79,7 @@ RUN python3 -m pip install --user --upgrade setuptools wheel twine \
 
 # Install Italian Modules dependencies
 RUN pip3 install psycogreen==1.0 \
+    && pip install asn1crypto \
     && pip3 install pyxb==1.2.5 \
     && pip3 install unicodecsv \
     && pip3 install codicefiscale==0.9 \
