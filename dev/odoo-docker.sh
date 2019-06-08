@@ -564,20 +564,20 @@ restore_procedure() {
   fi
 }
 
-restore_addons_procedure() {
+restore_adodons_procedure() {
   restore_check
   log "Clean all previous restore data"
   rm -rf restore/tmp/*
-  log "Backup procedure of archive initiated: $1"
+  log "Restore  procedure of addons initiated: $1"
   #echo $$ > restore/tmp/.restore
   cd restore/tmp
   tar -xf $CURRENT_PATH/$1
-  du
+  du addons/
   #rm restore/tmp/.restore
   #rm -rf restore/tmp/*
   RESTORE_DB=$(cat "$CURRENT_PATH/restore/tmp/db/.database")
   RESTORE_DATE=$(cat "$CURRENT_PATH/restore/tmp/db/.backup_date")
-  log "Database to restore: $RESTORE_DB"
+  log "Addons to restore"
   log "Database date: $RESTORE_DATE"
   read -p "Are you sure? " -n 1 -r
   echo    # (optional) move to a new line
