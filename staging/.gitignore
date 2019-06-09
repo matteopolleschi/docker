@@ -1,0 +1,12 @@
+backup/*
+restore/*
+postgress-data
+.odoo.config
+Build/addons
+Build/odoo-data
+filestore/*
+import/*
+export/*
+.backup
+.odoo.config
+.logfile
