@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y git
 
 # Install Odoo
 ENV ODOO_VERSION 12.0
-ENV ODOO_RELEASE 20190108
+ENV ODOO_RELEASE 20190530
 RUN set -x; \
         curl -o odoo.deb -SL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
         && dpkg --force-depends -i odoo.deb \
