@@ -23,6 +23,8 @@ mkdir addons
 
 rm -rf l10n-italy
 git clone -b 12.0 https://github.com/OCA/l10n-italy.git
+cd l10n-italy && git checkout cd37d1c3bd85dd9fa28bca29061de428f79abab4
+cd ..
 # mv l10n-italy/l* ./addons
 mv l10n-italy/l10n_it_* ./addons
 rm -rf l10n-italy
