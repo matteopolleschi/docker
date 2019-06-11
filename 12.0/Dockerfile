@@ -9,6 +9,7 @@ RUN set -x; \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             ca-certificates \
+            gnupg \
             curl \
             node-less \
             python3-pip \
@@ -26,6 +27,13 @@ RUN set -x; \
         && cp wkhtmltox/lib/* /usr/local/lib/ \
         && cp wkhtmltox/bin/* /usr/local/bin/ \
         && cp -r wkhtmltox/share/man/man1 /usr/local/share/man/
+
+# install latest postgresql-client
+RUN set -x; \
+        echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' > etc/apt/sources.list.d/pgdg.list \
+        && curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+        && apt-get update  \
+        && apt-get install -y postgresql-client
 
 # Install Git 
 RUN apt-get update && apt-get install -y git  
