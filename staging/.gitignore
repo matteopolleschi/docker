@@ -2,6 +2,9 @@ backup/*
 restore/*
 postgress-data
 .odoo.config
+Build/.odoo.release
+Build/.odoo.version
+Build/addons
 #uncomment addons for dev enveronment
 #Staging and Production enveronments requires addons not to be prebuilded on dev enveronment 
 #Build/addons
