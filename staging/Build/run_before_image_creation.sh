@@ -25,8 +25,9 @@ rm -rf l10n-italy
 git clone -b 12.0 https://github.com/OCA/l10n-italy.git
 echo "Merge https://github.com/OCA/l10n-italy.git to addonns/"
 # jan 08 2019 commit cd37d1c3bd85dd9fa28bca29061de428f79abab4
-#(echo "Checkout to commit" && cd l10n-italy && git checkout cd37d1c3bd85dd9fa28bca29061de428f79abab4)
-echo "Merge https://github.com/OCA/l10n-italy.git to addonns/"
+# 31e23cf74fad99a90b82c909fcb7ed51ae19d9d6
+(echo "Checkout to commit" && cd l10n-italy && git checkout 31e23cf74fad99a90b82c909fcb7ed51ae19d9d6)
+#echo "Merge https://github.com/OCA/l10n-italy.git to addonns/"
 (cd l10n-italy && tar c .) | (cd addons && tar xf -)
 #mv l10n-italy/l10n_it_* ./addons
 rm -rf l10n-italy
