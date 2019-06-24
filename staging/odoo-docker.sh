@@ -202,6 +202,12 @@ odoo_build() {
   #20190108
   log "Odoo version: $ODOO_VERSION"
   log "Odoo release: $ODOO_RELEASE"
+  # save version and release to file
+  rm -rf Build/.odoo.version || true
+  eval "echo $ODOO_VERSION" > $CURRENT_PATH/Build/.odoo.version
+  rm -rf Build/.odoo.release || true 
+  eval "echo $ODOO_RELEASE" > $CURRENT_PATH/Build/.odoo.release
+  
   docker build \
     --no-cache \
     --build-arg ODOO_VERSION=$ODOO_VERSION \
@@ -232,10 +238,21 @@ odoo_start() {
     #docker run -d -v $(pwd):/etc/odoo -p 80:8069 --name odoo12 --link db:db -t ubuntudoo-it:12
     # check if $ODOO_CONTAINER is existing
     #-v ../filestore:/var/lib/odoo/.local/share/Odoo/filestore \
-    log "Build filestore container: $ODOO_FILESTORE"
+    log "Start filestore container: $ODOO_FILESTORE"
+    #if [ ! "$(docker ps -q -f name=$ODOO_FILESTORE)" ]; then
+    #    if [ "$(docker ps -aq -f status=exited -f name=$ODOO_FILESTORE)" ]; then
+    #      # cleanup
+    #      echo "cleanup container"
+    #      docker rm $ODOO_FILESTORE
+    #    fi
+    #  # run your container
+    #  #docker run -d --name <name> my-docker-image
+    #fi
+
     docker rm $ODOO_FILESTORE
     mkdir -p $CURRENT_PATH/filestore
-    docker create \
+    # run of create
+    docker run \
         -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
         --name $ODOO_FILESTORE \
         busybox 2>&1 | tee $LOGFILE
@@ -246,13 +263,19 @@ odoo_start() {
     docker run \
         -d \
         -v $(pwd):/etc/odoo \
+        -e DB_ENV_NAME=$ODOO_DATABASE \
         --volumes-from $ODOO_FILESTORE \
         -p $ODOO_PORT:8069 \
         --name $ODOO_CONTAINER \
         --link $PSQL_CONTAINER:db \
         -t $ODOO_IMAGE \
         2>&1 | tee $LOGFILE
-    cd $CURRENT_PATH
+        # Set default database
+        # python ./odoo.py --addons=addons --db-filter=db_odoo_school_management 
+  echo "copy"
+  docker cp $CURRENT_PATH/Build/.odoo.version $ODOO_CONTAINER:/etc/odoo/
+  docker cp $CURRENT_PATH/Build/.odoo.release $ODOO_CONTAINER:/etc/odoo/
+  cd $CURRENT_PATH
   #else
   #  exit 0
     #Odoo via proxy
@@ -384,10 +407,7 @@ backup_database() {
 #backup addons to current path, tar archive, and remove directory
 backup_addons() {
   log "Backup Odoo's addons"
-  #log
   docker cp $ODOO_CONTAINER:/etc/odoo/addons/ $(pwd)
-  mv addons/* .
-  rmdir addons
   log "addons backup successfuly done"
 }
 
@@ -405,75 +425,86 @@ backup_filestore() {
 
 # check if backup directore exists, and flag process pid to file
 backup_check() {
-# check of $BACKUP_PATH exists
-  #[[ -d $BACKUP_PATH ]] || mkdir $BACKUP_PATH
-  if [ ! -d $BACKUP_PATH ]; then
-    echo "Create directory $BACKUP_PATH"
-    mkdir -p $BACKUP_PATH/tmp
+  # check of $BACKUP_PATH exists
+  if [ ! -d $1 ]; then
+    echo "Create directory $CURRENT_PATH/$1/tmp"
+    mkdir -p $CURRENT_PATH/$1/tmp
   fi
-
-  if [ -f $BACKUP_PATH/tmp/.backup ]; then
+  # Exit if previuos backup didn't ended success
+  if [ -f $CURRENT_PATH/$1/tmp/.backup ]; then
     log "Check if backup is running by other process or previous backup not ended well:","-n"
-    cat $BACKUP_PATH/tmp/.backup
-    log " Exit due to $BACKUP_PATH/tmp/.backup"
+    echo -n "PID:"
+    cat $1/tmp/.backup
+    log " Exit due to $1/tmp/.backup"
     exit 1
   fi
-
   # save script's pid to backup/tmp/.backup
-  echo $$ > $BACKUP_PATH/tmp/.backup
+  echo $$ > $1/tmp/.backup
 }
 
 #backup procedure for current database
 backup_odoo() {
+  B_PATH=$BACKUP_PATH
+  B_DB=$BACKUP_DB
+  if [[ -n "$1" ]]; then
+    B_PATH=$1
+    B_DB=$EXPORT_DB
+  fi
+  echo "value: $1 direcroty:$CURRENT_PATH/$B_PATH/$B_DB"
    #check if directory exists and no other backup processes are running
-  backup_check
+  backup_check $B_PATH
   # Backup database to tmp
-  rm -rf $BACKUP_PATH/tmp/db
-  mkdir -p $BACKUP_PATH/tmp/db
-  cd $BACKUP_PATH/tmp/db
+  
+  rm -rf $CURRENT_PATH/$B_PATH/tmp/db || true
+  mkdir -p $CURRENT_PATH/$B_PATH/tmp/db
+  cd $CURRENT_PATH/$B_PATH/tmp/db
   backup_database
   cd $CURRENT_PATH
 
   #Backup addons
-  rm -rf $BACKUP_PATH/tmp/addons/
-  mkdir -p $BACKUP_PATH/tmp/addons/
-  cd $BACKUP_PATH/tmp/addons/
+  rm -rf $CURRENT_PATH/$B_PATH/tmp/addons/ "" true
+  mkdir -p $CURRENT_PATH/$B_PATH/tmp/addons/
+  cd $CURRENT_PATH/$B_PATH/tmp/
   backup_addons
   cd $CURRENT_PATH
 
   #read -p "Press enter to continue"
 
   #Backup filestore
-  rm -rf $BACKUP_PATH/tmp/filestore/
-  mkdir -p $BACKUP_PATH/tmp/filestore/
-  cd $BACKUP_PATH/tmp/filestore/
+  rm -rf $CURRENT_PATH/$B_PATH/tmp/filestore/ || true
+  mkdir -p $CURRENT_PATH/$B_PATH/tmp/filestore/
+  cd $CURRENT_PATH/$B_PATH/tmp/filestore/
   #echo "$ODOO_DATABASE" > .filestore
   #mkdir -p $BACKUP_PATH/$BACKUP_DB/$NOW/filesystem
   backup_filestore
   cd $CURRENT_PATH
   
+  #copy release and version numbers /etc/odoo/.odoo.*
+  docker cp $ODOO_CONTAINER:/etc/odoo/.odoo.version $B_PATH/tmp/
+  docker cp $ODOO_CONTAINER:/etc/odoo/.odoo.release $B_PATH/tmp/
+
   #read -p "Press enter to continue"
 
   # tar tmp rchive and move to db
-  log "Store odoos archive: $BACKUP_PATH/$BACKUP_DB/odoo_backup-$NOW.tar.gz"
-  #mkdir -p $CURRENT_PATH/$BACKUP_PATH/$BACKUP_DB/$NOW
-  cd $BACKUP_PATH/tmp/
+  log "Store odoo's archive: $CURRENT_PATH/$BACKUP_PATH/$BACKUP_DB/odoo_backup-$NOW.tar.gz"
+  mkdir -p $CURRENT_PATH/$BACKUP_PATH/$BACKUP_DB
+  cd $CURRENT_PATH/$B_PATH/tmp/
   tar -cz \
-      --exclude="backup/tmp/.backup" \
+      --exclude="$B_PATH/tmp/.backup" \
       -f $CURRENT_PATH/$BACKUP_PATH/$BACKUP_DB/odoo_backup-$NOW.tar.gz \
       .
   cd $CURRENT_PATH
   log "Cleaning of backup directory"
-  #rm -rf $BACKUP_PATH/tmp/filestore/
-  #rm -rf $BACKUP_PATH/tmp/addons/addons/*
-  #rm -rf $BACKUP_PATH/tmp/db
+  #rm -rf $BACKUP_PATH/tmp/filestore/ || true
+  #rm -rf $BACKUP_PATH/tmp/addons/addons/* || true
+  #rm -rf $BACKUP_PATH/tmp/db || true
   
   log "Completed system backup"
   
   #echo "Disk usage:"
-  du $BACKUP_PATH/$BACKUP_DB/
-  if [-f $BACKUP_PATH/tmp/.backup]; then
-    rm $BACKUP_PATH/tmp/.backup
+  #du $BACKUP_PATH/$BACKUP_DB/
+  if [ -f $B_PATH/tmp/.backup ]; then
+    rm $B_PATH/tmp/.backup
   fi
 }
 
@@ -500,14 +531,14 @@ restore_check() {
 restore_procedure() {
   restore_check
   log "Clean all previous restore data"
-  rm -rf restore/tmp/*
+  rm -rf restore/tmp/* || true
   log "Restore procedure of archive initiated: $1"
   #echo $$ > restore/tmp/.restore
   cd restore/tmp
   tar -xf $CURRENT_PATH/$1
   du
-  #rm restore/tmp/.restore
-  #rm -rf restore/tmp/*
+  #rm restore/tmp/.restore || true
+  #rm -rf restore/tmp/* || true
   RESTORE_DB=$(cat "$CURRENT_PATH/restore/tmp/db/.database")
   RESTORE_DATE=$(cat "$CURRENT_PATH/restore/tmp/db/.backup_date")
   log "Database to restore: $RESTORE_DB"
@@ -541,7 +572,11 @@ restore_procedure() {
     #docker exec --user 0 $ODOO_CONTAINER chmod -R 775 "/var/lib/odoo/filestore/$BACKUP_DB/"
     # Transfer files via tar hack
     #
-    tar -cf - * --mode u=+r,g=-rwx,o=-rwx --owner 101 --group 102 | docker cp - $ODOO_CONTAINER:"/var/lib/odoo/filestore/$BACKUP_DB/"
+    tar -cf - * \
+      --mode u=+r,g=-rwx,o=-rwx \
+      --owner 101 \
+      --group 102 \
+        | docker cp - $ODOO_CONTAINER:"/var/lib/odoo/filestore/$BACKUP_DB/"
     # Restore ownership 
     
     # Restore files permisions
@@ -552,10 +587,6 @@ restore_procedure() {
     cd ..
     log "Done restore of filestore"
 
-    return 0
-
-    
-  
     cd $CURRENT_PATH
     log "Application is restored"
     status_odoo
@@ -567,7 +598,7 @@ restore_procedure() {
 restore_adodons_procedure() {
   restore_check
   log "Clean all previous restore data"
-  rm -rf restore/tmp/*
+  rm -rf restore/tmp/* || true
   log "Restore  procedure of addons initiated: $1"
   #echo $$ > restore/tmp/.restore
   cd restore/tmp
@@ -653,8 +684,52 @@ restore_odoo() {
         ;;
   esac
 done
+}
 
+export_odoo() {
+  log "Exporting data to external server"
+  log "Export from: ./export/$ODOO_DATABASE/ to:$EXPORT_PATH"
+  log "Migrate database from:$ODOO_DATABASE to:$EXPORT_DB" 
 
+  mkdir -p export/$ODOO_DATABASE
+  cd export/$ODOO_DATABASE
+  backup_odoo export
+  cd $CURRENT_PATH
+
+  # untar filestore
+  log "Unzip database.sql.gz"
+  cd $CURRENT_PATH/export/tmp/db
+  gzip -d database.sql.gz
+
+  #echo "s/CREATE DATABASE "$BACKUP_DB" WITH/CREATE DATABASE $EXPORT_DB WITH/g"
+
+  log "Find and replace in sql file: from $BACKUP_DB to $EXPORT_DB"
+  sed -i -e 's/DROP DATABASE "'"$BACKUP_DB"'";/DROP DATABASE "'"$EXPORT_DB"'";/g' database.sql
+  sed -i -e 's/CREATE DATABASE "'"$BACKUP_DB"'" WITH/CREATE DATABASE "'"$EXPORT_DB"'" WITH/g' database.sql
+  sed -i -e 's/-- Name: '"$BACKUP_DB"'; Type: DATABASE;/-- Exported: '"$BACKUP_DB"'; Date: '"$NOW"' Type: DATABASE;/g' database.sql
+  sed -i -e 's/ALTER DATABASE "'"$BACKUP_DB"'" OWNER/ALTER DATABASE "'"$EXPORT_DB"'" OWNER/g' database.sql
+  #sed -i -e '\connect -reuse-previous=on "dbname='"$BACKUP_DB"'"/\connect -reuse-previous=on "dbname='"$EXPORT_DB"'"/g' database.sql
+  #sed -i -e 's/\\connect.*/\\connect -reuse-previous=on "dbname='"$EXPORT_DB"'"/g' database.sql
+  #sed -i -e 's/\\connect.*/\\connect '"$EXPORT_DB"'/g' database.sql
+  sed -i -e 's/\\connect.*/\\connect -reuse-previous=on '"$EXPORT_DB"'/g' database.sql
+  rm -rf Build/.odoo.db || true 
+  eval "echo $$EXPORT_DB" > .odoo.db
+  gzip database.sql
+
+  cd $CURRENT_PATH/export/tmp/
+  log "Archive and compress data before transfer"
+  tar -czf ../import.$EXPORT_DB.$NOW.tar.gz .
+  cd ..
+  log "Archive to be exported size:"
+  ls -la import.$EXPORT_DB.$NOW.tar.gz
+
+  log "Start transfer data to: $EXPORT_PATH"
+  rsync -avz import.$EXPORT_DB.$NOW.tar.gz $EXPORT_PATH
+  log "Finished export of data"
+
+  cd $CURRENT_PATH
+
+  exit 0
 }
 
 #Check arguments passed to script
@@ -779,8 +854,8 @@ case $PROCEDURE in
     ;;
 
   export) #Export data 
-    echo "Exporting data"
-  ;;
+    export_odoo
+    ;;
 
   adminer) #Start docker containers
     docker stop adminer
@@ -790,7 +865,7 @@ case $PROCEDURE in
         --link $PSQL_CONTAINER:db \
         -d \
         -p $ADMINER_PORT:80 \
-        dockette/adminer:pgsql
+        dockette/adminer:pgs
     IP=$(echo $(hostname -I) | cut -d' ' -f 1)
     echo "Adminer is running on:"
     tput setaf 2; echo "http://$IP:$ADMINER_PORT/?server=$PSQL_CONTAINER&$username=admin&BACKUP_DB"; tput setaf 7;
