@@ -529,39 +529,38 @@ restore_check() {
 }
 
 restore_procedure() {
-  restore_check
-  log "Clean all previous restore data"
-  rm -rf restore/tmp/* || true
-  log "Restore procedure of archive initiated: $1"
-  #echo $$ > restore/tmp/.restore
-  cd restore/tmp
-  tar -xf $CURRENT_PATH/$1
+  tar -xf $1
   du
   #rm restore/tmp/.restore || true
   #rm -rf restore/tmp/* || true
-  RESTORE_DB=$(cat "$CURRENT_PATH/restore/tmp/db/.database")
-  RESTORE_DATE=$(cat "$CURRENT_PATH/restore/tmp/db/.backup_date")
+  RESTORE_DB=$(cat "db/.database")
+  RESTORE_DATE=$(cat "db/.backup_date")
   log "Database to restore: $RESTORE_DB"
   log "Database date: $RESTORE_DATE"
   read -p "Are you sure? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]]; then
 
-    log "Start restore of db:$RESTORE_DB"
+    log "Start restore of database"
     cd db
-    gzip -d database.sql.gz
-    docker exec \
-      -u postgres \
-      -e PGPASSWORD=$PSQL_PASSWORD \
-      $PSQL_CONTAINER \
-          psql \
-            --username=$PSQL_USER \
-            --dbname=$ODOO_DATABASE \
-                < database.sql
+    log "copy archive"
+    docker cp database.sql $PSQL_CONTAINER:/
+    log "import db"
+    gzip -d \
+      database.sql.gz 
+      docker exec \
+          -u postgres \
+          -e PGPASSWORD=$PSQL_PASSWORD \
+          $PSQL_CONTAINER \
+            psql postgres --username=$PSQL_USER -f /database.sql
+
+    docker exec $PSQL_CONTAINER rm /database.sql
     cd ..
     log "Done restore of db"
 
-    log "Start restore of filestore"
+    exit 0
+
+    log "Start restore of the filestore"
     cd filestore/
     # RM old data
     # Create directory
@@ -588,7 +587,7 @@ restore_procedure() {
     log "Done restore of filestore"
 
     cd $CURRENT_PATH
-    log "Application is restored"
+    log "Application is restored/imported!"
     status_odoo
   else
     log "Restore procedure was canceled - DB: $RESTORE_DB date: $RESTORE_DATE file: $1"
@@ -602,7 +601,7 @@ restore_adodons_procedure() {
   log "Restore  procedure of addons initiated: $1"
   #echo $$ > restore/tmp/.restore
   cd restore/tmp
-  tar -xf $CURRENT_PATH/$1
+  tar -xf ../$1 -C .
   du addons/
   #rm restore/tmp/.restore
   #rm -rf restore/tmp/*
@@ -672,6 +671,13 @@ restore_odoo() {
   select opt in "${options[@]}" "Select number of backup to restore"; do
     case $opt in
       *.gz)
+        mkdir -p restore/tmp
+        log "Clean all previous restore data"
+        rm -rf restore/tmp/* || true
+        cd restore/tmp
+        restore_check
+        log "Restore procedure of archive initiated: $1"
+        echo $$ > .restore
         restore_procedure $opt
         break
         ;;
@@ -682,8 +688,8 @@ restore_odoo() {
       *)
         echo "This is not a correct database archive choosed"
         ;;
-  esac
-done
+    esac
+  done
 }
 
 export_odoo() {
@@ -701,19 +707,12 @@ export_odoo() {
   cd $CURRENT_PATH/export/tmp/db
   gzip -d database.sql.gz
 
-  #echo "s/CREATE DATABASE "$BACKUP_DB" WITH/CREATE DATABASE $EXPORT_DB WITH/g"
-
   log "Find and replace in sql file: from $BACKUP_DB to $EXPORT_DB"
   sed -i -e 's/DROP DATABASE "'"$BACKUP_DB"'";/DROP DATABASE "'"$EXPORT_DB"'";/g' database.sql
   sed -i -e 's/CREATE DATABASE "'"$BACKUP_DB"'" WITH/CREATE DATABASE "'"$EXPORT_DB"'" WITH/g' database.sql
   sed -i -e 's/-- Name: '"$BACKUP_DB"'; Type: DATABASE;/-- Exported: '"$BACKUP_DB"'; Date: '"$NOW"' Type: DATABASE;/g' database.sql
   sed -i -e 's/ALTER DATABASE "'"$BACKUP_DB"'" OWNER/ALTER DATABASE "'"$EXPORT_DB"'" OWNER/g' database.sql
-  #sed -i -e '\connect -reuse-previous=on "dbname='"$BACKUP_DB"'"/\connect -reuse-previous=on "dbname='"$EXPORT_DB"'"/g' database.sql
-  #sed -i -e 's/\\connect.*/\\connect -reuse-previous=on "dbname='"$EXPORT_DB"'"/g' database.sql
-  #sed -i -e 's/\\connect.*/\\connect '"$EXPORT_DB"'/g' database.sql
   sed -i -e 's/\\connect.*/\\connect -reuse-previous=on '"$EXPORT_DB"'/g' database.sql
-  rm -rf Build/.odoo.db || true 
-  eval "echo $$EXPORT_DB" > .odoo.db
   gzip database.sql
 
   cd $CURRENT_PATH/export/tmp/
@@ -729,7 +728,45 @@ export_odoo() {
 
   cd $CURRENT_PATH
 
-  exit 0
+}
+
+import_odoo() {
+  log "Start import data procedure"
+  
+  unset options i
+  
+  while IFS= read -r -d $'\0' f; do
+    options[i++]="$f"
+  # put sorted listinf or backup archives files into into a list
+
+  done < <(find $CURRENT_PATH/import -maxdepth 1 -type f -name "import.$ODOO_DATABASE.*" -print0 | sort -z)
+  # select archive to restore
+  select opt in "${options[@]}" "Select number of backup to import:"; do
+    case $opt in
+      *.gz)
+        log "Start import procedure on $opt"
+        mkdir -p import/tmp
+        log "Clean all previous restore data"
+        rm -rf import/tmp/* || true
+        cd import/tmp
+        restore_check
+        log "Restore procedure of archive initiated: $1"
+        echo $$ > .restore
+        restore_procedure $opt
+        break
+
+        break
+        ;;
+      "end")
+        echo "You decided to cancel"
+        break
+        ;;
+      *)
+        echo "This is not a correct database archive choosed"
+        ;;
+    esac
+  done
+  cd $CURRENT_PATH
 }
 
 #Check arguments passed to script
@@ -857,15 +894,23 @@ case $PROCEDURE in
     export_odoo
     ;;
 
+  import) #Import data 
+    import_odoo
+    ;;
+
   adminer) #Start docker containers
     docker stop adminer
+    #docker build dockette/adminer:pgs
     docker rm adminer
     docker run \
+        --rm \
+        -e MEMORY=512M \
+        -e UPLOAD=4096M \
         --name adminer \
         --link $PSQL_CONTAINER:db \
         -d \
         -p $ADMINER_PORT:80 \
-        dockette/adminer:pgs
+        dockette/adminer
     IP=$(echo $(hostname -I) | cut -d' ' -f 1)
     echo "Adminer is running on:"
     tput setaf 2; echo "http://$IP:$ADMINER_PORT/?server=$PSQL_CONTAINER&$username=admin&BACKUP_DB"; tput setaf 7;
