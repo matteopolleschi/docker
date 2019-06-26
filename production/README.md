@@ -101,13 +101,16 @@ Example of code for special revision of l10n-italy code:
 * (echo "Checkout to commit" && cd l10n-italy && git checkout 31e23cf74fad99a90b82c909fcb7ed51ae19d9d6)
 
 
-4.2. 
+4.2. choose which enveronment to use
 
-cd development
+
+cd dev
 
 cd staging
 
 cd production
+
+original images are stored in 12.0, 11.0, and 8.0 directories
 
 
 4.3 Prebuild addons

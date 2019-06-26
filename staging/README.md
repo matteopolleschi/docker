@@ -47,37 +47,37 @@ This is where companies make their money so you can't have any crippling mistake
 
 Each enveronment has own configuration file.
 
-
-# odoo released version, example of release dates (released) at: http://nightly.odoo.com/12.0/nightly/deb/
+odoo released version, example of release dates (released) at: http://nightly.odoo.com/12.0/nightly/deb/
 ODOO_VERSION=12.0
 
-# Never setup production RELEASE enveronment as latest, because each time you build the server, the enveronment would be different. Test staeble release release, ask collegues, or experts which version best suites to your installation. Recomended to play with latest on development enveronment.
-#ODOO_RELEASE=latest
+Never setup production RELEASE enveronment as latest, because each time you build the server, the enveronment would be different. Test staeble release release, ask collegues, or experts which version best suites to your installation. Recomended to play with latest on development enveronment.
+ODOO_RELEASE=latest
+or
 ODOO_RELEASE=20190609
 
-#setup docker's image name, should be different on dev, staging and production if you host them on the same server
+setup docker's image name, should be different on dev, staging and production if you host them on the same server
 ODOO_IMAGE=odoo12prod
 
-#odoo's container name, should be different for dev, staging, and production environment. You can use this name to reference to docker's container, check logs, start and stop container.
+odoo's container name, should be different for dev, staging, and production environment. You can use this name to reference to docker's container, check logs, start and stop container.
 ODOO_CONTAINER=odoo12-production
 
-#odoo's port, should be different for dev, staging, and production environment
-#ODOO_PORT=80
+odoo's port, should be different for dev, staging, and production environment
 ODOO_PORT=8091
 
-#odoo's database name, should be different for dev, staging, and production environment
+odoo's database name, should be different for dev, staging, and production environment
 ODOO_DATABASE=master
 
-#odoo's user with rights to access database, could be different for dev, staging, and production environment.
+odoo's user with rights to access database, could be different for dev, staging, and production environment.
 ODOO_USER=odoo
 ODOO_PASSWORD=odoo
 
 
 Production enveronment is usually configured to export data to staging enveronment, Staging is configured to export data to production after tests. Development enveronment configured to export data to staging enveronment, EXPORT_DB represents the name of database to be replaced in SQL file.
-#Export path directory could be on local or remote filesystem
-#EXPORT_PATH=/home/kaimin/Code/odoo/it/ubuntudoo-it/production/import
+Export path directory could be on local or remote filesystem
+EXPORT_PATH=/home/root/Code/odoo/it/ubuntudoo-it/production/import
 EXPORT_PATH=10.0.0.60:/root/ubuntudoo-it/staging/import
-# name of database and directories on server to export database to
+
+name of database and directories on server to export database to
 EXPORT_DB=staging_db
 
 All admin's actions and script's feedback are stored in this log file. Do not forget to rotate and/or clean this file.
@@ -86,7 +86,8 @@ MAINTENANCE_LOG_FILE=.odoo_maintenance.log
 
 4.1.2 Build/Dockerfile
 
-# if you do not set up in enviromnet those vaiables, defauld values would be used.
+if you do not set up in enviromnet those vaiables, defauld values would be used.
+
 ARG ODOO_VERSION=12.0
 ARG ODOO_RELEASE=20190108
 
@@ -94,19 +95,22 @@ ARG ODOO_RELEASE=20190108
 
 That script runs each time when required to prebuild addons.
 
-#Check very important feature. During prebuilding of addons, you can reference special revision (commit) of code, to be sure that Odoo's revision is working well with Odoo's module revision. In that case you need to identify commit's ID, then cd to diretory and perform git checkout. 
+Check very important feature. During prebuilding of addons, you can reference special revision (commit) of code, to be sure that Odoo's revision is working well with Odoo's module revision. In that case you need to identify commit's ID, then cd to diretory and perform git checkout. 
 
-#Example of code for special revision of l10n-italy code:
-(echo "Checkout to commit" && cd l10n-italy && git checkout 31e23cf74fad99a90b82c909fcb7ed51ae19d9d6)
+Example of code for special revision of l10n-italy code:
+* (echo "Checkout to commit" && cd l10n-italy && git checkout 31e23cf74fad99a90b82c909fcb7ed51ae19d9d6)
 
 
-4.2. 
+4.2. choose which enveronment to use
 
-cd development
+
+cd dev
 
 cd staging
 
 cd production
+
+original images are stored in 12.0, 11.0, and 8.0 directories
 
 
 4.3 Prebuild addons
@@ -123,26 +127,23 @@ cd production
 
 4.6 Import/Export and Backup/Restore 
 
-#Exprort all data to $EXPORT_PATH
+Exprort all data to $EXPORT_PATH
 ./odoo-docker.sh -p export
 
-#Move to the server via ssh or cd  where data is exported
+Move to the server via ssh or cd  where data is exported
 ./odoo-docker.sh -p import
 
-
-#Backup existing server to the volume backup/[name of of db]/
+Backup existing server to the volume backup/[name of of db]/
 ./odoo-docker.sh -p backup
 
-
-#Restore existing server to the volume backup/[name of of db]/
+Restore existing server to the volume backup/[name of of db]/
 ./odoo-docker.sh -p restore
 
-
-4.7 Stop the Odoo server
-./odoo-docker.sh -p stopall
-
-4.8. Check log file of Odoo server
+4.7. Check log file of Odoo server
 ./odoo-docker.sh -p log
 
-4.9 Check statis of the Odoo server
+4.8 Check statis of the Odoo server
+./odoo-docker.sh -p status
+
+4.9 Stop the Odoo server
 ./odoo-docker.sh -p stopall
