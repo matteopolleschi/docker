@@ -553,6 +553,8 @@ restore_procedure() {
           -e PGPASSWORD=$PSQL_PASSWORD \
           $PSQL_CONTAINER \
             psql postgres --username=$PSQL_USER -f /database.sql
+
+    docker exec $PSQL_CONTAINER rm /database.sql
     cd ..
     log "Done restore of db"
 
