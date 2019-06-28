@@ -772,43 +772,22 @@ import_odoo() {
 #Check arguments passed to script
 usage() { echo "$0 script usage:" && grep " .)\ #" $0; exit 0; }
 [ $# -eq 0 ] && usage
-while getopts "c:brup:i" arg; do
+logmessage=""
+while getopts "c:bm:hrup:i" arg; do
   case $arg in
     c) # Specify configuration file name -c .odoo.conf (default).
         CONFIG_FILE=${OPTARG}
         ;;
-    b) # Start backup odoo system
-        START_BACKUP=1
-        if [ $START_RESTORE -eq 1 ]; then
-            echo "Unable to start restore and backup at one step. Use option -b or -r"
-            echo "Exiting"
-            exit 1
-        fi
-        echo "Starting backup procedure"
-      ;;
-    r) # Start procedure = start | stop | restart | build | backup | restore
-        if [ $START_BACKUP -eq 1 ]; then
-            echo "Unable to start backup and restore at one step. Use option -b or -r"
-            echo "Exiting"
-            exit 1
-        fi
-        START_RESTORE=1
-        echo "Starting restore procedure"
-      ;;
-    u) # Start building the odoo system
-        echo "Starting docker build procedure"
-        build_odoo
-      ;;
     p) # Start procedure
         PROCEDURE=${OPTARG}
         #check later
       ;;
-    m) #Message to log file
-      echo message to log file
-       ;;
+    m) # Print message to the log file .logfile, example: ./odoo-docker.sh -m "Attempt to restore #5" -p restore, will print Attemp to restore #5 and start restore procedure.
+        logmessage=$OPTARG
+      ;;
     h | *) # Display help.
       usage
-      exit 0
+      #exit 0
       ;;
   esac
 done
@@ -823,6 +802,8 @@ else
     exit 1
 fi
 
+#Log admin's message to logfile if -m "Text message" used
+[[ ! -z "$logmessage" ]] && log "Admin's logged to file: $logmessage"
 
 NOW=`date '+%Y%m%d-%H%M%S'`
 echo "Date: $NOW"
@@ -919,19 +900,18 @@ case $PROCEDURE in
   help | *) # Display help.
     echo "Start process: odoo-docker.sh -p with options:"
     echo "-p help: shows this help"
-    echo "-p start: start containers"
-    echo "-p status: odoo nad psql status"
-    echo "-p stop: odoo status"
-    echo "-p list: list backups images"
+    echo "-p startall: start containers"
+    echo "-p status: Odoo and psql status"
+    echo "-p stopall: odoo status"
+    echo "-p log: Show Odoo's log file"
     echo "-p build:"
     echo "-p prebuild:"
     echo "-p restart: restart"
-    echo "-p backup:"
-    echo "-p restore:"
-    echo "-p export: export db, addons, filestore"
+    echo "-p backup: backup configured database, filestore and addons"
+    echo "-p restore: restore configured database and filesstore (addons manually only)"
+    echo "-p export: export db, addons, filestore to local or remote location"
     echo "-p import: import db, addons, filestore"
-    echo "-p deploy: deploy exported data from dev to staging or staging to production"
-    echo "-p list: List restore points"
+    echo "-p adminer:  start adminer container to check PSQL database. Good for staging and dev servers."
     exit 0
     ;;
 esac

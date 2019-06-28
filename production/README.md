@@ -1,4 +1,4 @@
-Ubuntudoo - Italian version
+Ubuntudoo - Italian version (eng)
 ===========================
 
 To run production on server:
@@ -6,6 +6,8 @@ To run production on server:
 1. Introduction
 
 OpenERP is a full-featured business application suite, with more than 700 modules. Despite the complexity of technical work and the importance of the community members in the development of such a huge project, our goal is to make software that is easy to use, user friendly, and consistent while remaining fully open.
+
+Italinan localization included. See more details: https://github.com/OCA/l10n-italy
 
 1.1. What is docker container?
 
@@ -45,7 +47,10 @@ This is where companies make their money so you can't have any crippling mistake
 
 4.1.1 .odoo.config
 
-Each enveronment has own configuration file.
+Each enveronment has own configuration file. By defauult odoo-docker.sh is using .odoo.config file, if you wish to override file, you can load other config file, example:
+     ./odoo-docker.sh -c .odoo.production.conf -p prebuild
+        or
+     ./odoo-docker.sh -c odoo.staging.conf -p prebuild
 
 odoo released version, example of release dates (released) at: http://nightly.odoo.com/12.0/nightly/deb/
 ODOO_VERSION=12.0
@@ -147,3 +152,38 @@ Restore existing server to the volume backup/[name of of db]/
 
 4.9 Stop the Odoo server
 ./odoo-docker.sh -p stopall
+
+4.10. Other commands
+
+./odoo-docker.sh -c [config file name]
+run odoo usinng non default config file
+
+./odoo-docker.sh -m "Message"
+Save some message to the log file, by default to the .logfile. Each time ./odoo-config.sh run, notices and errors are logged into the .logfile 
+
+./odoo-docker.sh -h
+Show help for basic script:
+    c) # Specify configuration file name -c .odoo.conf (default).
+    p) # Start procedure
+    m) # Message to log file
+    h | *) # Display help.
+    help | *) # Display help.
+
+./odoo-docker.sh help
+Show procedures available:
+Configuration file [.odoo.config] has been loaded.
+Date: 20190628-135250
+Start process: odoo-docker.sh -p with options:
+-p help: shows this help
+-p startall: start containers
+-p status: Odoo and psql status
+-p stopall: odoo status
+-p log: Show Odoo's log file
+-p build:
+-p prebuild:
+-p restart: restart
+-p backup: backup configured database, filestore and addons
+-p restore: restore configured database and filesstore (addons manually only)
+-p export: export db, addons, filestore to local or remote location
+-p import: import db, addons, filestore
+-p adminer:  start adminer container to check PSQL database. Good for staging and dev servers
