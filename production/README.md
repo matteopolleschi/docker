@@ -58,7 +58,7 @@ ODOO_VERSION=12.0
 Never setup production RELEASE enveronment as latest, because each time you build the server, the enveronment would be different. Test staeble release release, ask collegues, or experts which version best suites to your installation. Recomended to play with latest on development enveronment.
 ODOO_RELEASE=latest
 or
-ODOO_RELEASE=20190609
+ODOO_RELEASE=20200212
 
 setup docker's image name, should be different on dev, staging and production if you host them on the same server
 ODOO_IMAGE=odoo12prod

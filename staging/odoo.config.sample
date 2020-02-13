@@ -3,31 +3,23 @@
 ODOO_VERSION=12.0
 # odoo released version, example of release dates (released) at: http://nightly.odoo.com/12.0/nightly/deb/
 # production and staging server should never be latest release but fixed data
-#ODOO_RELEASE=latest
-ODOO_RELEASE=20190108
-# enveronment: dev, staging, or production
+ODOO_RELEASE=20200212
+# environment: dev, staging, or production
 ODOO_ENVIRONMENT=staging
 # set flags for deployment deploy odoo, addon, and db
 ODOO_DEPLOY=odoo+db
 #setup docker image name, could/should be different on dev but better to be the same on staging and production
 ODOO_IMAGE=odoo12staging
 #odoo's container name, should be different for dev, staging, and production environment
-#ODOO_CONTAINER=odoo12
 ODOO_CONTAINER=odoo12-staging
-#ODOO_CONTAINER=odoo12-dev
 #odoo's port, should be different for dev, staging, and production environment
-#ODOO_PORT=80
-#ODOO_PORT=8090
-ODOO_PORT=8081
+ODOO_PORT=8079
 #odoo's database name, should be different for dev, staging, and production environment
-#ODOO_DATABASE=odoo
-#ODOO_DATABASE=odoo-db-dev
 ODOO_DATABASE=odoo-staging
 #odoo's user with rights to access database, could be different for dev, staging, and production environment.
 ODOO_USER=odoo
 ODOO_PASSWORD=odoo
 #filestore container to store files
-#ODOO_FILESTORE=odoo_filestore_dev
 ODOO_FILESTORE=odoo_filestore_staging
 
 #set up blocking flag to operate psql for this container. Value = TRUE to block or FALSE to allow operate sql for this container
@@ -39,14 +31,10 @@ PSQL_DB=postgres
 PSQL_USER=odoo
 PSQL_PASSWORD=odoo
 # Setup POSTGRES_BUSY if want to use busybox
-#PSQL_BUSY=odoo_data
-PSQL_BUSY=odoo_data_dev
-#PSQL_BUSY=odoo_data_staging
+PSQL_BUSY=odoo_data_staging
 
 BACKUP_PATH=backup
 BACKUP_LOG_CLEAN=week
-#BACKUP_DB=X0tPZD
-#BACKUP_DB=dev-052619
 BACKUP_DB=$ODOO_DATABASE
 #Exclude sensetive information in backup's tables if required
 BACKUP_EXCLUDE_TABLE=""
