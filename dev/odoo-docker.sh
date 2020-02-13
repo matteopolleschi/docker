@@ -190,6 +190,7 @@ odoo_build() {
   log "Build filestore container: $ODOO_FILESTORE"
   docker rm $ODOO_FILESTORE
   mkdir -p $CURRENT_PATH/filestore
+  chmod -R a+rwx $CURRENT_PATH/filestore
   docker create \
         -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
         --name $ODOO_FILESTORE \
@@ -251,6 +252,7 @@ odoo_start() {
 
     docker rm $ODOO_FILESTORE
     mkdir -p $CURRENT_PATH/filestore
+    chmod -R a+rwx $CURRENT_PATH/filestore
     # run of create
     docker run \
         -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
@@ -331,6 +333,7 @@ build_odoo() {
   log "Build filestore container: $ODOO_FILESTORE"
   docker rm $ODOO_FILESTORE
   mkdir -p $CURRENT_PATH/filestore
+  chmod -R a+rwx $CURRENT_PATH/filestore
   docker create \
         -v $CURRENT_PATH/filestore:/var/lib/odoo/filestore \
         --name $ODOO_FILESTORE \
