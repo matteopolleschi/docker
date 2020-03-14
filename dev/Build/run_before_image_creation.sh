@@ -74,6 +74,14 @@ echo "Merge https://github.com/matteopolleschi/odoo_publishers.git to addonns/"
 #rsync -a odoo_publishers/ ./addons
 #rm -rf odoo_publishers
 
+rm -rf odoo_automated_testing
+git clone https://github.com/matteopolleschi/odoo_automated_testing.git
+#(cd odoo_automated_testing && tar c .) | (cd addons && tar xf -)
+mv odoo_automated_testing ./addons/
+echo "Merge https://github.com/matteopolleschi/odoo_automated_testing.git to addonns/"
+#rsync -a odoo_automated_testing/ ./addons
+#rm -rf odoo_automated_testing
+
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
 # mv l10n-italy-supplemental/l10n_it_* ./addons
