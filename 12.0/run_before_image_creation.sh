@@ -59,6 +59,11 @@ git clone -b 12.0 https://github.com/matteopolleschi/odoo_publishers.git
 mv odoo_publishers ./addons
 rm -rf odoo_publishers
 
+rm -rf odoo_automated_testing
+git clone https://github.com/matteopolleschi/odoo_automated_testing.git
+mv odoo_automated_testing ./addons
+rm -rf odoo_automated_testing
+
 #rm -rf l10n-italy-supplemental
 #git clone -b 11.0 https://github.com/zeroincombenze/l10n-italy-supplemental.git
 # mv l10n-italy-supplemental/l10n_it_* ./addons
