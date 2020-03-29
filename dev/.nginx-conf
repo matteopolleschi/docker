@@ -1,0 +1,3 @@
+VIRTUAL_HOST=il-frutteto.al-citofono.it, alimentari-rossi.al-citofono.it, al-citofono.it
+LETSENCRYPT_HOST=il-frutteto.al-citofono.it, alimentari-rossi.al-citofono.it, al-citofono.it
+LETSENCRYPT_EMAIL=majidbangash138@gmail.com
