@@ -18,6 +18,11 @@ ODOO_PORT=8090
 #odoo's database name, should be different for dev, staging, and production environment
 ODOO_DATABASE=odoo-db-dev
 #odoo's user with rights to access database, could be different for dev, staging, and production environment.
+
+VIRTUAL_HOST=il-frutteto.al-citofono.it, alimentari-rossi.al-citofono.it, al-citofono.it
+LETSENCRYPT_HOST=il-frutteto.al-citofono.it, alimentari-rossi.al-citofono.it, al-citofono.it
+LETSENCRYPT_EMAIL=majidbangash138@gmail.com
+
 ODOO_USER=odoo
 ODOO_PASSWORD=odoo
 #filestore container to store files

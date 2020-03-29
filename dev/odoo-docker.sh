@@ -96,6 +96,7 @@ psql_start() {
     -e POSTGRES_DB=$PSQL_DB \
     -e POSTGRES_USER=$PSQL_USER \
     -e POSTGRES_PASSWORD=$PSQL_PASSWORD \
+    --net nginx-proxy \
     --name $PSQL_CONTAINER \
     -v $(pwd)/postgress-data/:/var/lib/postgresql/data \
     $PSQL_IMAGE
@@ -268,6 +269,8 @@ odoo_start() {
         -e DB_ENV_NAME=$ODOO_DATABASE \
         --volumes-from $ODOO_FILESTORE \
         -p $ODOO_PORT:8069 \
+	--net nginx-proxy \
+	--env-file=../.nginx-conf \
         --name $ODOO_CONTAINER \
         --link $PSQL_CONTAINER:db \
         -t $ODOO_IMAGE \
