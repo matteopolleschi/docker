@@ -1,3 +1,4 @@
 .idea
 venv/
+dev/Build/jobs/db/env/
 8.0/front_proxy/env.list
