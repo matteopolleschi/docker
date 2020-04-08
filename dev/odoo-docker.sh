@@ -185,6 +185,20 @@ odoo_prebuild() {
   #cd ..
 }
 
+start_cron() {
+  echo -n "Strating cronjobs container: "
+  cd build/jobs
+  docker run -t -i cron/handler
+}
+
+build_cron() {
+  log "Building cron jobs image"
+  cd build/jobs
+  log -n "Building directory is:"
+  pwd
+  docker build --rm -t cron/handler .
+}
+
 odoo_build() {
   log "Bulding Odoo's image: $ODOO_IMAGE"
   #docker build $ODOO_IMAGE
@@ -815,6 +829,12 @@ NOW=`date '+%Y%m%d-%H%M%S'`
 echo "Date: $NOW"
 
 case $PROCEDURE in
+  build_c)
+    build_cron
+    ;;
+  start_c)
+    start_cron
+    ;;
   startall) #Start all odoo docker containers
     start_postgres
     start_odoo
