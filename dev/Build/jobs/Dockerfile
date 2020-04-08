@@ -13,7 +13,7 @@ COPY /db/backup_db.sh /root/utils
 RUN chmod 0744 /root/utils/backup_db.sh
 
 COPY /db/backup_db_cron /etc/cron.d/backup_db_cron
-COPY db/s3cmd.conf /root/.s3cfg
+COPY /db/env/s3cmd.conf /root/.s3cfg
 
 RUN chmod 0644 /etc/cron.d/backup_db_cron
 RUN crontab /etc/cron.d/backup_db_cron
