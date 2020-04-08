@@ -1,0 +1,1 @@
+* * * * * /home/utils/backup_db.sh >> /var/log/db_backup_cron.log 2>&1

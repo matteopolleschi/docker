@@ -7,10 +7,6 @@ ENV LANG C.UTF-8
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
         apt-get update \
-        && apt-get install -y \
-            cron \
-            nodejs \
-            nano \
         && apt-get install -y --no-install-recommends \
             ca-certificates \
             curl \
