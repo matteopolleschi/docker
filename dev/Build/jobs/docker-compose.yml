@@ -1,0 +1,9 @@
+version: '3'
+services: 
+    cron:
+        build: .
+        container_name: cron-dev
+        volumes:
+        -   db_backup:/root/db_backups
+volumes:
+    db_backup:
